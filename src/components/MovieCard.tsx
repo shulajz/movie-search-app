@@ -1,5 +1,3 @@
-// src/components/MovieCard.tsx
-
 import React from "react";
 import {
   Card,
@@ -10,11 +8,14 @@ import {
   Box,
   Chip,
   Stack,
+  Paper,
 } from "@mui/material";
 import { Movie } from "../types";
 import FavoriteButton from "./FavoriteButton";
 import WatchlistButton from "./WatchlistButton";
 import { getWatchedStatus, isInWatchlist } from "../services/movieService";
+import MovieIcon from "@mui/icons-material/Movie";
+import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 
 interface MovieCardProps {
   movie: Movie;
@@ -22,10 +23,46 @@ interface MovieCardProps {
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
-  const fallbackPosterUrl =
-    "https://via.placeholder.com/300x450?text=No+Poster";
   const isWatched = getWatchedStatus(movie.imdbID);
   const inWatchlist = isInWatchlist(movie.imdbID);
+
+  // Custom movie poster fallback
+  const renderPoster = () => {
+    if (movie.Poster && movie.Poster !== "N/A") {
+      return (
+        <CardMedia
+          component="img"
+          height="280"
+          image={movie.Poster}
+          alt={`${movie.Title} poster`}
+          sx={{ objectFit: "cover" }}
+        />
+      );
+    } else {
+      // Fallback poster design
+      return (
+        <Box
+          sx={{
+            height: 280,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(30, 30, 30, 0.8)",
+            color: "grey.400",
+            p: 2,
+            textAlign: "center",
+          }}
+        >
+          <LocalMoviesIcon sx={{ fontSize: 80, mb: 2, opacity: 0.7 }} />
+          <Typography variant="subtitle1" sx={{ fontWeight: "medium" }}>
+            {movie.Title}
+          </Typography>
+          <Typography variant="body2">No Poster Available</Typography>
+        </Box>
+      );
+    }
+  };
 
   return (
     <Card
@@ -64,13 +101,8 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
         </Box>
       )}
 
-      <CardMedia
-        component="img"
-        height="280"
-        image={movie.Poster !== "N/A" ? movie.Poster : fallbackPosterUrl}
-        alt={`${movie.Title} poster`}
-        sx={{ objectFit: "cover" }}
-      />
+      {renderPoster()}
+
       <CardContent sx={{ flexGrow: 1, p: 2 }}>
         <Typography
           variant="subtitle1"
