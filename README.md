@@ -2,8 +2,6 @@
 
 A responsive React application for searching movies and TV shows using the OMDb API. Built with React, TypeScript, and Material-UI.
 
-![MovieFlix Screenshot](screenshot.png)
-
 ## Features
 
 - Search for movies and TV shows using the OMDb API
