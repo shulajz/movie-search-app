@@ -8,8 +8,6 @@ export const searchMovies = async (
   searchTerm: string,
   page: number = 1
 ): Promise<SearchResponse> => {
-  console.log("API_KEY--", API_KEY);
-
   try {
     const response = await axios.get<SearchResponse>(API_URL, {
       params: {
@@ -79,4 +77,102 @@ export const removeFromFavorites = (movieId: string): void => {
 export const isMovieFavorite = (movieId: string): boolean => {
   const favorites = getFavorites();
   return favorites.some((movie) => movie.imdbID === movieId);
+};
+
+// Watchlist functionality using localStorage
+const WATCHLIST_KEY = "movie-watchlist";
+
+export interface WatchlistItem extends Movie {
+  addedAt: string;
+  watched: boolean;
+}
+
+export const getWatchlist = (): WatchlistItem[] => {
+  try {
+    const watchlistString = localStorage.getItem(WATCHLIST_KEY);
+    return watchlistString ? JSON.parse(watchlistString) : [];
+  } catch (error) {
+    console.error("Error getting watchlist:", error);
+    return [];
+  }
+};
+
+export const addToWatchlist = (
+  movie: Movie,
+  watched: boolean = false
+): void => {
+  try {
+    const watchlist = getWatchlist();
+
+    // Check if the movie is already in watchlist
+    if (!watchlist.some((item) => item.imdbID === movie.imdbID)) {
+      const watchlistItem: WatchlistItem = {
+        ...movie,
+        addedAt: new Date().toISOString(),
+        watched,
+      };
+      watchlist.push(watchlistItem);
+      localStorage.setItem(WATCHLIST_KEY, JSON.stringify(watchlist));
+
+      // Dispatch an event to notify other components
+      window.dispatchEvent(new Event("watchlistUpdated"));
+    }
+  } catch (error) {
+    console.error("Error adding to watchlist:", error);
+  }
+};
+
+export const removeFromWatchlist = (movieId: string): void => {
+  try {
+    const watchlist = getWatchlist();
+    const updatedWatchlist = watchlist.filter(
+      (movie) => movie.imdbID !== movieId
+    );
+    localStorage.setItem(WATCHLIST_KEY, JSON.stringify(updatedWatchlist));
+
+    // Dispatch an event to notify other components
+    window.dispatchEvent(new Event("watchlistUpdated"));
+  } catch (error) {
+    console.error("Error removing from watchlist:", error);
+  }
+};
+
+export const isInWatchlist = (movieId: string): boolean => {
+  try {
+    const watchlist = getWatchlist();
+    return watchlist.some((movie) => movie.imdbID === movieId);
+  } catch (error) {
+    console.error("Error checking watchlist:", error);
+    return false;
+  }
+};
+
+export const toggleWatchedStatus = (movieId: string): void => {
+  try {
+    const watchlist = getWatchlist();
+    const updatedWatchlist = watchlist.map((movie) => {
+      if (movie.imdbID === movieId) {
+        return { ...movie, watched: !movie.watched };
+      }
+      return movie;
+    });
+
+    localStorage.setItem(WATCHLIST_KEY, JSON.stringify(updatedWatchlist));
+
+    // Dispatch an event to notify other components
+    window.dispatchEvent(new Event("watchlistUpdated"));
+  } catch (error) {
+    console.error("Error toggling watched status:", error);
+  }
+};
+
+export const getWatchedStatus = (movieId: string): boolean => {
+  try {
+    const watchlist = getWatchlist();
+    const movie = watchlist.find((movie) => movie.imdbID === movieId);
+    return movie ? movie.watched : false;
+  } catch (error) {
+    console.error("Error getting watched status:", error);
+    return false;
+  }
 };
