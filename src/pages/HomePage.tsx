@@ -52,6 +52,12 @@ const HomePage: React.FC = () => {
     }
   }, []);
 
+  // Initial search on component mount with "Marvel" as example
+  useEffect(() => {
+    fetchMovies("Marvel", 1);
+    setSearchTerm("Marvel");
+  }, [fetchMovies]);
+
   const handleSearch = (term: string) => {
     setSearchTerm(term);
     setPage(1);
