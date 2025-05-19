@@ -66,7 +66,7 @@ const Header: React.FC = () => {
         }}
       >
         <MovieIcon />
-        MovieFlix
+        MotionPicks
       </Typography>
       <List>
         {navItems.map((item) => (
@@ -127,7 +127,7 @@ const Header: React.FC = () => {
               alignItems: "center",
             }}
           >
-            MovieFlix
+            MotionPicks
           </Typography>
 
           <ThemeSwitcher />

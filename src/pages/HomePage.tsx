@@ -24,35 +24,86 @@ const HomePage: React.FC = () => {
   const [totalResults, setTotalResults] = useState<number>(0);
   const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
 
-  const fetchMovies = useCallback(async (term: string, pageNum: number) => {
-    if (!term) return;
+  // Calculate number of items per row based on screen size
+  const getItemsPerRow = () => {
+    if (window.innerWidth >= 1200) return 4; // lg
+    if (window.innerWidth >= 900) return 3; // md
+    if (window.innerWidth >= 600) return 2; // sm
+    return 1; // xs
+  };
 
-    setIsLoading(true);
-    setError(null);
+  // Calculate how many additional movies needed to fill the last row
+  const calculateNeededMovies = useCallback(() => {
+    const itemsPerRow = getItemsPerRow();
+    if (movies.length === 0) return 0;
 
-    try {
-      const response = await searchMovies(term, pageNum);
+    const remainder = movies.length % itemsPerRow;
+    return remainder === 0 ? 0 : itemsPerRow - remainder;
+  }, [movies.length]);
 
-      if (response.Response === "False") {
-        setError(response.Error || "No results found");
-        setMovies([]);
-        setTotalResults(0);
-      } else {
-        if (pageNum === 1) {
-          setMovies(response.Search);
+  const fetchMovies = useCallback(
+    async (term: string, pageNum: number, limit?: number) => {
+      if (!term) return;
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await searchMovies(term, pageNum);
+
+        if (response.Response === "False") {
+          setError(response.Error || "No results found");
+          setMovies([]);
+          setTotalResults(0);
         } else {
-          setMovies((prevMovies) => [...prevMovies, ...response.Search]);
-        }
-        setTotalResults(parseInt(response.totalResults, 10));
-      }
-    } catch (err) {
-      setError("An error occurred while searching. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+          let newMovies = response.Search;
 
-  // Initial search on component mount with "Marvel" as example
+          // If limit is specified, only take that many movies
+          if (limit && limit < newMovies.length) {
+            newMovies = newMovies.slice(0, limit);
+          }
+
+          if (pageNum === 1) {
+            setMovies(newMovies);
+          } else {
+            setMovies((prevMovies) => [...prevMovies, ...newMovies]);
+          }
+          setTotalResults(parseInt(response.totalResults, 10));
+        }
+      } catch (err) {
+        setError("An error occurred while searching. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  // Auto-load additional movies to fill the last row
+  useEffect(() => {
+    const autoFillLastRow = async () => {
+      const neededMovies = calculateNeededMovies();
+
+      if (neededMovies > 0 && movies.length < totalResults && !isLoading) {
+        // Load the next page but only use the number of movies needed to fill the row
+        const nextPage = page + 1;
+        setPage(nextPage);
+        await fetchMovies(searchTerm, nextPage, neededMovies);
+      }
+    };
+
+    autoFillLastRow();
+  }, [
+    movies.length,
+    totalResults,
+    isLoading,
+    calculateNeededMovies,
+    fetchMovies,
+    page,
+    searchTerm,
+  ]);
+
+  // Initial search on component mount
   useEffect(() => {
     fetchMovies("Harry Potter", 1);
     setSearchTerm("Harry Potter");
@@ -128,13 +179,15 @@ const HomePage: React.FC = () => {
         </Box>
       )}
 
-      {!isLoading && movies.length > 0 && movies.length < totalResults && (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <Button variant="contained" color="primary" onClick={loadMore}>
-            Load More
-          </Button>
-        </Box>
-      )}
+      {!isLoading &&
+        movies.length > 0 &&
+        movies.length < totalResults - calculateNeededMovies() && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <Button variant="contained" color="primary" onClick={loadMore}>
+              Load More
+            </Button>
+          </Box>
+        )}
 
       {!isLoading && movies.length === 0 && !error && (
         <Box sx={{ textAlign: "center", py: 5 }}>
