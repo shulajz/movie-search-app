@@ -20,4 +20,4 @@ A responsive React application for searching movies and TV shows using the OMDb 
 
 ## Deployment
 
-This project is deployed using GitHub Pages. You can view it at: https://YOUR_USERNAME.github.io/movieflix
+This project is deployed using GitHub Pages. You can view it at: https://shulajz.github.io/movie-search-app
