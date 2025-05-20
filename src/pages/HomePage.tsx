@@ -26,10 +26,10 @@ const HomePage: React.FC = () => {
 
   // Calculate number of items per row based on screen size
   const getItemsPerRow = () => {
-    if (window.innerWidth >= 1200) return 4; // lg
-    if (window.innerWidth >= 900) return 3; // md
-    if (window.innerWidth >= 600) return 2; // sm
-    return 1; // xs
+    if (window.innerWidth >= 1200) return 4;
+    if (window.innerWidth >= 900) return 3;
+    if (window.innerWidth >= 600) return 2;
+    return 1;
   };
 
   // Calculate how many additional movies needed to fill the last row

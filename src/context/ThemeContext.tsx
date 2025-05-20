@@ -93,7 +93,6 @@ export const ThemeContextProvider: React.FC<ThemeProviderProps> = ({
     return (savedMode as PaletteMode) || "dark";
   });
 
-  // Toggle theme function
   const toggleTheme = () => {
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
   };
@@ -103,7 +102,6 @@ export const ThemeContextProvider: React.FC<ThemeProviderProps> = ({
     localStorage.setItem("themeMode", mode);
   }, [mode]);
 
-  // Get current theme based on mode
   const theme = mode === "light" ? lightTheme : darkTheme;
 
   return (

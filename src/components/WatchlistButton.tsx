@@ -27,7 +27,6 @@ const WatchlistButton: React.FC<WatchlistButtonProps> = ({
   const [inWatchlist, setInWatchlist] = useState(false);
   const [watched, setWatched] = useState(false);
 
-  // Load current watchlist status
   useEffect(() => {
     const checkStatus = () => {
       setInWatchlist(isInWatchlist(movie.imdbID));
@@ -36,7 +35,6 @@ const WatchlistButton: React.FC<WatchlistButtonProps> = ({
 
     checkStatus();
 
-    // Listen for watchlist updates to refresh status
     window.addEventListener("watchlistUpdated", checkStatus);
 
     return () => {
@@ -45,7 +43,7 @@ const WatchlistButton: React.FC<WatchlistButtonProps> = ({
   }, [movie.imdbID]);
 
   const handleWatchlistToggle = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click when clicking the button
+    e.stopPropagation();
 
     if (inWatchlist) {
       removeFromWatchlist(movie.imdbID);
@@ -56,7 +54,6 @@ const WatchlistButton: React.FC<WatchlistButtonProps> = ({
       setWatched(false);
     }
 
-    // Manually dispatch the event to ensure it's triggered
     window.dispatchEvent(new Event("watchlistUpdated"));
 
     if (onToggle) {
@@ -65,12 +62,11 @@ const WatchlistButton: React.FC<WatchlistButtonProps> = ({
   };
 
   const handleWatchedToggle = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click when clicking the button
+    e.stopPropagation();
 
     toggleWatchedStatus(movie.imdbID);
     setWatched(!watched);
 
-    // Manually dispatch the event to ensure it's triggered
     window.dispatchEvent(new Event("watchlistUpdated"));
 
     if (onToggle) {

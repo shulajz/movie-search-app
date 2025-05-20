@@ -114,7 +114,6 @@ export const addToWatchlist = (
       watchlist.push(watchlistItem);
       localStorage.setItem(WATCHLIST_KEY, JSON.stringify(watchlist));
 
-      // Dispatch an event to notify other components
       window.dispatchEvent(new Event("watchlistUpdated"));
     }
   } catch (error) {
@@ -130,7 +129,6 @@ export const removeFromWatchlist = (movieId: string): void => {
     );
     localStorage.setItem(WATCHLIST_KEY, JSON.stringify(updatedWatchlist));
 
-    // Dispatch an event to notify other components
     window.dispatchEvent(new Event("watchlistUpdated"));
   } catch (error) {
     console.error("Error removing from watchlist:", error);
@@ -159,7 +157,6 @@ export const toggleWatchedStatus = (movieId: string): void => {
 
     localStorage.setItem(WATCHLIST_KEY, JSON.stringify(updatedWatchlist));
 
-    // Dispatch an event to notify other components
     window.dispatchEvent(new Event("watchlistUpdated"));
   } catch (error) {
     console.error("Error toggling watched status:", error);

@@ -26,7 +26,6 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick }) => {
   const isWatched = getWatchedStatus(movie.imdbID);
   const inWatchlist = isInWatchlist(movie.imdbID);
 
-  // Custom movie poster fallback
   const renderPoster = () => {
     if (movie.Poster && movie.Poster !== "N/A") {
       return (
