@@ -101,7 +101,7 @@ const Header: React.FC = () => {
   );
 
   return (
-    <AppBar position="static" elevation={3} color="default">
+    <AppBar position="sticky" elevation={3} color="default">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <MovieIcon
